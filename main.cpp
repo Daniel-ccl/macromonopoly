@@ -49,7 +49,7 @@ int main() {
 
     std::vector<std::string> creadores = { "Ángel", "Axel", "Esteban", "Julio", "Daniel" };
 
-    static bool debugClick = false;  // Variable para mostrar mensaje cuando se clickea el botón
+    static bool debugClick = false;
 
     while (!WindowShouldClose()) {
         // Cámara
@@ -76,6 +76,12 @@ int main() {
         dibujarTablero(tablero1);
         dibujarTablero(tablero2);
 
+        // Dibuja las torres y jugadores solo si la simulación está activa
+        if (simulacionIniciada) {
+            dibujarSimulacion(tablero1, tablero2);
+        }
+
+        // Dibujar las esferas negras en casillas Fortuna (solo decorativo)
         {
             Vector3 p1 = tablero1[fortuna1_t1].posicion;
             Vector3 p2 = tablero2[fortuna1_t2].posicion;
@@ -114,7 +120,7 @@ int main() {
             }
 
             DrawRectangleRec(botonSimulacion, RED);
-            DrawRectangleLinesEx(botonSimulacion, 2, WHITE); // Para ver mejor el área clickeable
+            DrawRectangleLinesEx(botonSimulacion, 2, WHITE);
 
             const char* textoBoton = "CADENAS DE MARKOV";
             int anchoBoton = MeasureText(textoBoton, 20);
@@ -125,7 +131,7 @@ int main() {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mousePos, botonSimulacion)) {
                 simulacionIniciada = true;
                 iniciarSimulacion(tablero1, tablero2);
-                debugClick = true; // Para mostrar mensaje en pantalla
+                debugClick = true;
             }
 
             if (debugClick) {
@@ -133,11 +139,10 @@ int main() {
             }
         }
 
-        // Actualizar y dibujar simulación si está activa
+        // Actualizar simulación solo si está activa
         if (simulacionIniciada) {
             float deltaTime = GetFrameTime();
             actualizarSimulacion(deltaTime);
-            dibujarSimulacion(tablero1, tablero2);
 
             DrawText("SIMULACION ACTIVA", 10, 40, 20, GREEN);
 
