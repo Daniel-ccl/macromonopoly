@@ -1,9 +1,9 @@
 #include "simulacion.h"
 #include <cstdlib>
-#include <iostream>  // para debug
+#include <iostream>
 
 static std::vector<Jugador> jugadores;
-static int turnosTotales = 500;
+static int turnosTotales = 846;
 static int turnoActual = 0;
 static bool finalizada = false;
 static float tiempoAcumulado = 0.0f;
@@ -11,24 +11,22 @@ static const float intervaloMovimiento = 0.1f;
 static std::vector<std::vector<int>> visitas;
 static const std::vector<Casilla>* refTablero1 = nullptr;
 static const std::vector<Casilla>* refTablero2 = nullptr;
-static std::vector<int> tableroJugador; // tablero actual para cada jugador
+static std::vector<int> tableroJugador;
 
-// Colores nuevos
-const Color COLOR_PURPURA = { 128, 0, 128, 255 };
-
-// Indices con multiplicador para casillas especiales en tablero 0 (mediterranean av, charles av, ventor av, kentucky)
+const Color COLOR_PURPURA = {128, 0, 128, 255};
 static std::vector<int> casillasMultiplicador = {5, 13, 21, 30};
 static float multiplicadorVisitas = 3.0f;
 
 void iniciarSimulacion(const std::vector<Casilla>& t1, const std::vector<Casilla>& t2) {
     refTablero1 = &t1;
     refTablero2 = &t2;
+
     jugadores.clear();
-    jugadores.push_back({ YELLOW, 0, 0, 0, {} });
-    jugadores.push_back({ PURPLE, 0, 0, 0, {} });
+    jugadores.push_back({YELLOW, 0, 0, 0, {}});
+    jugadores.push_back({PURPLE, 0, 0, 0, {}});
 
     visitas = std::vector<std::vector<int>>(2, std::vector<int>(t1.size(), 0));
-    tableroJugador = std::vector<int>(2, 0); // ambos empiezan en tablero 0
+    tableroJugador = std::vector<int>(2, 0);
 
     turnoActual = 0;
     tiempoAcumulado = 0.0f;
@@ -56,7 +54,6 @@ void actualizarSimulacion(float deltaTime) {
     std::string nombreCasilla = (*tableroActualRef)[jugadores[jugadorTurno].posicion].nombre;
     bool esFortuna = (nombreCasilla.find("Fortuna") != std::string::npos);
 
-    // Cambio de tablero si cae en Fortuna y saca pares
     if (esFortuna && pares) {
         tableroJugador[jugadorTurno] = 1 - tableroActual;
         jugadores[jugadorTurno].posicion %= ((tableroJugador[jugadorTurno] == 0) ? refTablero1->size() : refTablero2->size());
@@ -64,7 +61,6 @@ void actualizarSimulacion(float deltaTime) {
 
     int visitaIndex = jugadores[jugadorTurno].posicion;
     float factor = 1.0f;
-    // Aplica multiplicador solo para tablero 0 en casillas especiales
     if (tableroActual == 0) {
         for (int c : casillasMultiplicador) {
             if (visitaIndex == c) {
@@ -74,7 +70,7 @@ void actualizarSimulacion(float deltaTime) {
         }
     }
 
-    visitas[jugadorTurno][visitaIndex] += (int)factor;
+    visitas[jugadorTurno][visitaIndex] += static_cast<int>(factor);
 
     std::cout << "Turno: " << turnoActual << " Jugador: " << jugadorTurno
               << " Tablero: " << tableroActual << " Posición: " << visitaIndex
@@ -89,33 +85,30 @@ void actualizarSimulacion(float deltaTime) {
 }
 
 void dibujarSimulacion(const std::vector<Casilla>& t1, const std::vector<Casilla>& t2) {
-    // Torres en tablero 1
     for (int i = 0; i < (int)t1.size(); ++i) {
         int totalVisitas = visitas[0][i] + visitas[1][i];
         if (totalVisitas > 0) {
             Vector3 pos = t1[i].posicion;
             float alturaTorre = 0.1f + totalVisitas * 0.03f;
-            DrawCube({ pos.x, pos.y + alturaTorre / 2.0f, pos.z }, 1.5f, alturaTorre, 1.5f, DARKBLUE);
+            DrawCube({pos.x, pos.y + alturaTorre / 2.0f, pos.z}, 1.5f, alturaTorre, 1.5f, DARKBLUE);
         }
     }
-    // Torres en tablero 2
+
     for (int i = 0; i < (int)t2.size(); ++i) {
         int totalVisitas = visitas[0][i] + visitas[1][i];
         if (totalVisitas > 0) {
             Vector3 pos = t2[i].posicion;
             float alturaTorre = 0.1f + totalVisitas * 0.03f;
-            DrawCube({ pos.x, pos.y + alturaTorre / 2.0f, pos.z }, 1.5f, alturaTorre, 1.5f, DARKPURPLE);
+            DrawCube({pos.x, pos.y + alturaTorre / 2.0f, pos.z}, 1.5f, alturaTorre, 1.5f, DARKPURPLE);
         }
     }
 
-    // Dibuja jugadores en sus tableros
     for (int j = 0; j < 2; j++) {
         const std::vector<Casilla>* tableroRef = (tableroJugador[j] == 0) ? &t1 : &t2;
         Vector3 pos = (*tableroRef)[jugadores[j].posicion].posicion;
         pos.y += (*tableroRef)[0].altura / 2.0f + 0.3f;
         DrawSphere(pos, 0.3f, jugadores[j].color);
 
-        // Debug texto
         DrawText(TextFormat("Jugador %d Tablero %d Pos %d", j+1, tableroJugador[j], jugadores[j].posicion),
                  20, 20 + j*20, 20, jugadores[j].color);
     }

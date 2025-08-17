@@ -1,0 +1,29 @@
+Proyecto: Monopoly_Windows
+
+Notas de instalación y ejecución:
+
+1. Raylib:
+   - Es necesario descargar Raylib para poder compilar y ejecutar la simulación.
+   - Alternativa 1: Descargar la versión precompilada de Raylib para Windows desde la página oficial:
+     https://www.raylib.com/
+     - Descarga el ZIP correspondiente a Visual Studio.
+     - Descomprime el ZIP en una carpeta de tu preferencia.
+   - Alternativa 2: Usar MinGW si prefieres compilar desde línea de comandos (opcional).
+
+2. Abrir el proyecto en Visual Studio:
+   - Crea un nuevo proyecto de C++ vacío.
+   - Agrega todos los archivos de la carpeta `src/` al proyecto.
+   - Configura los directorios de inclusión (Include Directories) apuntando a la carpeta `include` de Raylib.
+   - Configura los directorios de librerías (Library Directories) apuntando a la carpeta `lib` de Raylib.
+   - Asegúrate de linkear las librerías necesarias según la documentación de Raylib.
+
+3. Compilar y ejecutar:
+   - Una vez configurado, compila el proyecto desde Visual Studio.
+   - El ejecutable se generará automáticamente en la carpeta de salida definida en Visual Studio.
+   - Ejecuta el programa para ver la simulación de Cadenas de Markov en Monopoly.
+
+4. Contenido adicional:
+   - `doc/`: Este archivo de instrucciones y el PDF explicativo de la simulación.
+   - `python/`: Código Python utilizado para generar la matriz de transición.
+   - `build/`: Carpeta donde se generará el ejecutable al compilar (vacía al inicio).
+
